@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../screens/card_play_screen.dart';
-import '../screens/placeholder_screen.dart';
+import '../screens/groups_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/social_feed_screen.dart';
+import '../screens/your_decks_screen.dart';
 
 class BottomNavHost extends StatefulWidget {
   const BottomNavHost({super.key});
@@ -15,10 +18,10 @@ class _BottomNavHostState extends State<BottomNavHost> {
 
   final List<Widget> _screens = const [
     CardPlayScreen(),
-    PlaceholderScreen(title: 'Decks'),
-    PlaceholderScreen(title: 'Feed'),
-    PlaceholderScreen(title: 'Groups'),
-    PlaceholderScreen(title: 'Profile'),
+    DecksScreen(),
+    SocialFeedScreen(),
+    GroupsScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

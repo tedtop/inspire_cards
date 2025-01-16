@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:appinio_swiper/appinio_swiper.dart';
 import 'text_response_screen.dart';
 
 class CardPlayScreen extends StatefulWidget {
@@ -16,24 +17,12 @@ class _CardPlayScreenState extends State<CardPlayScreen> {
     'If you could learn a new skill instantly, what would it be?',
   ];
 
-  int _currentIndex = 0;
+  late AppinioSwiperController _swiperController;
 
-  void _goToNext() {
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % _cards.length;
-    });
-  }
-
-  void _goToPrevious() {
-    setState(() {
-      _currentIndex = (_currentIndex - 1 + _cards.length) % _cards.length;
-    });
-  }
-
-  void _shuffle() {
-    setState(() {
-      _currentIndex = 0;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _swiperController = AppinioSwiperController();
   }
 
   @override
@@ -70,57 +59,65 @@ class _CardPlayScreenState extends State<CardPlayScreen> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                Expanded(
-                  child: Center(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        );
-                      },
-                      child: _buildCard(_cards[_currentIndex]),
-                    ),
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 90, horizontal: 48),
+                  child: AppinioSwiper(
+                    controller: _swiperController,
+                    cardBuilder: (context, index) => _buildCard(_cards[index]),
+                    cardCount: _cards.length,
+                    duration: const Duration(milliseconds: 300),
+                    maxAngle: 15,
+                    threshold: 50,
+                    backgroundCardCount: 2,
+                    backgroundCardScale: 0.9,
+                    backgroundCardOffset: const Offset(0, 20),
+                    isDisabled: false,
+                    loop: false,
+                    allowUnSwipe: true,
+                    allowUnlimitedUnSwipe: true,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_left),
-                      iconSize: 40,
-                      onPressed: _goToPrevious,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_left),
+                    iconSize: 40,
+                    onPressed: () {
+                      _swiperController.swipeLeft();
+                    },
+                  ),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Container(
-                      width: 48,
-                      height: 48,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.refresh, color: Colors.white),
-                        onPressed: _shuffle,
-                      ),
+                    child: IconButton(
+                      icon: const Icon(Icons.refresh, color: Colors.white),
+                      onPressed: () {
+                        _swiperController.unswipe();
+                      },
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_right),
-                      iconSize: 40,
-                      onPressed: _goToNext,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_right),
+                    iconSize: 40,
+                    onPressed: () {
+                      _swiperController.swipeRight();
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
       ),
@@ -129,8 +126,6 @@ class _CardPlayScreenState extends State<CardPlayScreen> {
 
   Widget _buildCard(String text) {
     return Container(
-      key: ValueKey<String>(text),
-      width: MediaQuery.of(context).size.width * 0.8,
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: const Color(0xFFCDC0DD),
@@ -139,14 +134,18 @@ class _CardPlayScreenState extends State<CardPlayScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Center(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           Row(
